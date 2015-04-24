@@ -1,0 +1,14 @@
+lndynamic_whmcs v0.1.1
+
+This is the lndynamic module for WHMCS. It is released under the GNU General Public License v3.0.
+See https://wiki.lunanode.com/index.php/Reselling#lndynamic_module_for_WHMCS for details.
+Updates at https://github.com/LunaNode/lndynamic_whmcs
+
+Changelog
+---------
+
+v0.1.1
+* Fix bug with the plan name dropdown
+
+v0.1.0
+* Original release
