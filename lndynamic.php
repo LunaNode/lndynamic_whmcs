@@ -48,9 +48,46 @@ function lndynamic_API($api_id, $api_key, $category, $action, $params = array())
 	}
 }
 
-function lndynamic_ConfigOptions() {
+function lndynamic_Plans() {
 	return array(
-		"Plan name" => array("Type" => "dropdown", "Options" => "512 MB,1024 MB,2048 MB,4096 MB,8192 MB,16384 MB,Special 2048,Special 1536,Flexible 2048,Flexible 4096,Flexible 8192,Flexible 4096+,SSD 512,SSD 1024,SSD 2048,SSD 4096,SSD 8192,SSD 16384,SSD LL1024,SSD LL2048,SSD LL4096,1024 MB high-memory,1536 MB high-memory,2048 MB high-memory,4096 MB high-memory,8192 MB high-memory,16384 MB high-memory,32768 MB high-memory,SSD 1024 high-memory,SSD 1536 high-memory,SSD 2048 high-memory,SSD 4096 high-memory,SSD 8192 high-memory,SSD 16384 high-memory,SSD 32768 high-memory"),
+		'512 MB' => 1,
+		'1024 MB' => 2,
+		'2048 MB' => 3,
+		'4096 MB' => 4,
+		'8192 MB' => 5,
+		'16384 MB' => 6,
+		'Flexible 2048' => 35,
+		'Flexible 4096' => 36,
+		'Flexible 8192' => 37,
+		'Flexible 4096+' => 42,
+		'SSD 512' => 43,
+		'SSD 1024' => 44,
+		'SSD 2048' => 45,
+		'SSD 4096' => 46,
+		'SSD 8192' => 47,
+		'SSD 16384' => 48,
+		'1024 MB (high-memory)' => 59,
+		'1536 MB (high-memory)' => 60,
+		'2048 MB (high-memory)' => 61,
+		'4096 MB (high-memory)' => 62,
+		'8192 MB (high-memory)' => 63,
+		'16384 MB (high-memory)' => 64,
+		'32768 MB (high-memory)' => 65,
+		'SSD 1024 (high-memory)' => 66,
+		'SSD 1536 (high-memory)' => 67,
+		'SSD 2048 (high-memory)' => 68,
+		'SSD 4096 (high-memory)' => 69,
+		'SSD 8192 (high-memory)' => 70,
+		'SSD 16384 (high-memory)' => 71,
+		'SSD 32768 (high-memory)' => 72,
+	);
+}
+
+function lndynamic_ConfigOptions() {
+	$planOptions = implode(',', array_keys(lndynamic_Plans()));
+
+	return array(
+		"Plan name" => array("Type" => "dropdown", "Options" => $planOptions),
 		"plan_id" => array("Type" => "text", "Size" => "5", "Description" => "Only required for special plans; if set, overrides plan name"),
 		"API id" => array("Type" => "text", "Size" => "20", "Description" => "Generate from API tab"),
 		"API key" => array("Type" => "text", "Size" => "30", "Description" => "Generate from API tab")
@@ -86,77 +123,12 @@ function lndynamic_CreateAccount($params) {
 		return "Error: product misconfiguration (backend interface not set).";
 	}
 
-	if(empty($plan_id)) {
-		if($plan_name == '1024 MB') {
-			$plan_id = 2;
-		} else if($plan_name == '2048 MB') {
-			$plan_id = 3;
-		} else if($plan_name == '4096 MB') {
-			$plan_id = 4;
-		} else if($plan_name == '8192 MB') {
-			$plan_id = 5;
-		} else if($plan_name == '16384 MB') {
-			$plan_id = 6;
-		} else if($plan_name == 'Special 2048') {
-			$plan_id = 23;
-		} else if($plan_name == 'Special 1536') {
-			$plan_id = 31;
-		} else if($plan_name == 'Flexible 2048') {
-			$plan_id = 35;
-		} else if($plan_name == 'Flexible 4096') {
-			$plan_id = 36;
-		} else if($plan_name == 'Flexible 8192') {
-			$plan_id = 37;
-		} else if($plan_name == 'Flexible 4096+') {
-			$plan_id = 42;
-		} else if($plan_name == 'SSD 512') {
-			$plan_id = 43;
-		} else if($plan_name == 'SSD 1024') {
-			$plan_id = 44;
-		} else if($plan_name == 'SSD 2048') {
-			$plan_id = 45;
-		} else if($plan_name == 'SSD 4096') {
-			$plan_id = 46;
-		} else if($plan_name == 'SSD 8192') {
-			$plan_id = 47;
-		} else if($plan_name == 'SSD 16384') {
-			$plan_id = 48;
-		} else if($plan_name == 'SSD LL1024') {
-			$plan_id = 49;
-		} else if($plan_name == 'SSD LL2048') {
-			$plan_id = 50;
-		} else if($plan_name == 'SSD LL4096') {
-			$plan_id = 51;
-		} else if($plan_name == '1024 MB high-memory') {
-			$plan_id = 59;
-		} else if($plan_name == '1536 MB high-memory') {
-			$plan_id = 60;
-		} else if($plan_name == '2048 MB high-memory') {
-			$plan_id = 61;
-		} else if($plan_name == '4096 MB high-memory') {
-			$plan_id = 62;
-		} else if($plan_name == '8192 MB high-memory') {
-			$plan_id = 63;
-		} else if($plan_name == '16384 MB high-memory') {
-			$plan_id = 64;
-		} else if($plan_name == '32768 MB high-memory') {
-			$plan_id = 65;
-		} else if($plan_name == 'SSD 1024 high-memory') {
-			$plan_id = 66;
-		} else if($plan_name == 'SSD 1536 high-memory') {
-			$plan_id = 67;
-		} else if($plan_name == 'SSD 2048 high-memory') {
-			$plan_id = 68;
-		} else if($plan_name == 'SSD 4096 high-memory') {
-			$plan_id = 69;
-		} else if($plan_name == 'SSD 8192 high-memory') {
-			$plan_id = 70;
-		} else if($plan_name == 'SSD 16384 high-memory') {
-			$plan_id = 71;
-		} else if($plan_name == 'SSD 32768 high-memory') {
-			$plan_id = 72;
+	if(!$plan_id) {
+		$plans = lndynamic_Plans();
+		if(array_key_exists($plan_name, $plans)) {
+			$plan_id = $plans[$plan_name];
 		} else {
-			$plan_id = 1;
+			return "Error: product misconfiguration (unknown plan name '$plan_name', and plan_id not set).";
 		}
 	} else {
 		$plan_id = intval($plan_id);
