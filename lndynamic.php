@@ -28,7 +28,7 @@ function lndynamic_API($api_id, $api_key, $category, $action, $params = array())
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-	if(!empty($fields)) {
+	if($fields) {
 		curl_setopt($ch, CURLOPT_POST, count($fields));
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
 	}
@@ -107,19 +107,19 @@ function lndynamic_CreateAccount($params) {
 		return 'Custom field vmid has not been configured.';
 	}
 
-	if(!empty($params['customfields']['vmid'])){
+	if($params['customfields']['vmid']){
 		$result = lndynamic_API($api_id, $api_key, 'vm', 'info', array('vm_id' => $params['customfields']['vmid']));
-		if(!isset($result['error'])){
+		if(!array_key_exists('error', $result)){
 			return 'Virtual machine already exists, please delete and try again.';
 		}
 	}
-	
-	if(!isset($configoptions['Operating System'])) {
+
+	if(!array_key_exists('Operating System', $configoptions)) {
 		return "Error: you must select an operating system!";
 	}
 	$os = $configoptions['Operating System'];
 
-	if(empty($api_id) || empty($api_key)) {
+	if(!$api_id || !$api_key) {
 		return "Error: product misconfiguration (backend interface not set).";
 	}
 
@@ -136,7 +136,7 @@ function lndynamic_CreateAccount($params) {
 
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'create', array('hostname' => $domain, 'plan_id' => $plan_id, 'image_id' => $os, 'wait' => 1));
 
-	if(isset($result['error'])) {
+	if(array_key_exists('error', $result)) {
 		return "Error: {$result['error']}.";
 	} else {
 		lunanode_customFieldSet($params['pid'], 'vmid', $params['serviceid'], $result['vm_id']);
@@ -148,18 +148,18 @@ function lndynamic_TerminateAccount($params) {
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
 
-	if(empty($params['customfields']['vmid'])) {
+	if(!$params['customfields']['vmid']) {
 		return 'Virtual machine does not exist.';
 	}
 
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'delete', array('vm_id' => $params['customfields']['vmid']));
 
-	if(isset($result['error'])) {
+	if(array_key_exists('error', $result)) {
 		return "Error: {$result['error']}.";
 	} else {
 		lunanode_customFieldSet($params['pid'], 'vmid', $params['serviceid'], '');
 	}
-	
+
 	return "success";
 
 }
@@ -168,13 +168,13 @@ function lndynamic_SuspendAccount($params) {
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
 
-	if(empty($params['customfields']['vmid'])) {
+	if(!$params['customfields']['vmid']) {
 		return 'Virtual machine does not exist.';
 	}
 
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'stop', array('vm_id' => $params['customfields']['vmid']));
 
-	if(isset($result['error'])) {
+	if(array_key_exists('error', $result)) {
 		return "Error: {$result['error']}.";
 	} else {
 		return "success";
@@ -185,7 +185,7 @@ function lndynamic_UnsuspendAccount($params) {
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
 
-	if(empty($params['customfields']['vmid'])) {
+	if(!$params['customfields']['vmid']) {
 		return 'Virtual machine does not exist.';
 	}
 
@@ -201,7 +201,7 @@ function lndynamic_ClientArea($params) {
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
 
-	if(empty($params['customfields']['vmid'])) {
+	if(!$params['customfields']['vmid']) {
 		return 'Virtual machine does not exist.';
 	}
 
@@ -209,7 +209,7 @@ function lndynamic_ClientArea($params) {
 	$info = lndynamic_API($api_id, $api_key, 'vm', 'info', array('vm_id' => $vmid));
 	$images = lndynamic_API($api_id, $api_key, 'image', 'list', array('vm_id' => $vmid));
 
-	if(!isset($info['info']) || !isset($images['images'])) {
+	if(!array_key_exists('info', $info) || !array_key_exists('images', $images)) {
 		return "Backend call failed.";
 	}
 
@@ -243,18 +243,18 @@ function lndynamic_action($params, $action, $extra = array()) {
 	if(!lunanode_isActive($params['serviceid'])) {
 		return 'Error: service is not currently active.';
 	}
-	
+
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
 
-	if(empty($params['customfields']['vmid'])) {
+	if(!$params['customfields']['vmid']) {
 		return 'Virtual machine does not exist.';
 	}
 
 	$args = array_merge(array('vm_id' => $params['customfields']['vmid']), $extra);
 	$result = lndynamic_API($api_id, $api_key, 'vm', $action, $args);
 
-	if(isset($result['error'])) {
+	if(array_key_exists('error', $result)) {
 		return "Error: {$result['error']}.";
 	} else {
 		return "success";
@@ -278,7 +278,7 @@ function lndynamic_rescue($params) {
 }
 
 function lndynamic_reimage($params) {
-	if(!isset($_REQUEST['os'])) {
+	if(!array_key_exists('os', $_REQUEST) || !$_REQUEST['os']) {
 		return 'No operating system specified.';
 	}
 
@@ -286,41 +286,41 @@ function lndynamic_reimage($params) {
 		return 'Error: service is not currently active.';
 	}
 
-	if(empty($params['customfields']['vmid'])) {
+	if(!$params['customfields']['vmid']) {
 		return 'Virtual machine does not exist.';
 	}
-	
+
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
-	
+
 	$info = lndynamic_API($api_id, $api_key, 'vm', 'info', array('vm_id' => $params['customfields']['vmid']));
 
-	if(isset($info['error'])) {
+	if(array_key_exists('error', $result)) {
 		return "Error: {$info['error']}.";
 	}
 
-	if(empty($info['info']['ip'])) {
+	if(!$info['info']['ip']) {
 		lndynamic_API($api_id, $api_key, 'vm', 'floatingip-add', array('vm_id' => $params['customfields']['vmid'])); //maybe this failed to acquire IP, so try now
 		return "Error: VM does not have an IP address yet!";
-	} else if(empty($info['info']['hostname']) || empty($info['extra']['plan_id'])) {
-		return "Error: VM missing hostname attribtue.";
+	} else if(!array_key_exists('hostname', $info['info']) || !array_key_exists('plan_id', $info['extra'])) {
+		return "Error: VM missing hostname and/or plan_id attribtues.";
 	}
 
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'floatingip-delete', array('vm_id' => $params['customfields']['vmid'], 'keep' => 'yes'));
 
-	if(isset($result['error'])) {
+	if(array_key_exists('error', $result)) {
 		return "Error: {$result['error']}.";
 	}
 
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'delete', array('vm_id' => $params['customfields']['vmid']));
 
-	if(isset($result['error'])) {
+	if(array_key_exists('error', $result)) {
 		return "Error: {$result['error']}.";
 	}
 
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'create', array('hostname' => $info['info']['hostname'], 'plan_id' => $info['extra']['plan_id'], 'image_id' => $_REQUEST['os'], 'ip' => $info['info']['ip']));
 
-	if(isset($result['error'])) {
+	if(array_key_exists('error', $result)) {
 		return "Error: {$result['error']}.";
 	}
 
@@ -332,17 +332,17 @@ function lndynamic_vnc($params) {
 	if(!lunanode_isActive($params['serviceid'])) {
 		return 'Error: service is not currently active.';
 	}
-	
+
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
 
-	if(empty($params['customfields']['vmid'])) {
+	if(!$params['customfields']['vmid']) {
 		return 'Virtual machine does not exist.';
 	}
 
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'vnc', array('vm_id' => $params['customfields']['vmid']));
 
-	if(isset($result['vnc_url'])) {
+	if(array_key_exists('vnc_url', $result)) {
 		lunanode_redirect($result['vnc_url']);
 	} else {
 		return "Error: VNC connection failed.";
