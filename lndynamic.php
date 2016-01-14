@@ -50,7 +50,7 @@ function lndynamic_API($api_id, $api_key, $category, $action, $params = array())
 
 function lndynamic_ConfigOptions() {
 	return array(
-		"Plan name" => array("Type" => "dropdown", "Options" => "512 MB,1024 MB,2048 MB,4096 MB,8192 MB,16384 MB"),
+		"Plan name" => array("Type" => "dropdown", "Options" => "512 MB,1024 MB,2048 MB,4096 MB,8192 MB,16384 MB,Special 2048,Special 1536,Flexible 2048,Flexible 4096,Flexible 8192,Flexible 4096+,SSD 512,SSD 1024,SSD 2048,SSD 4096,SSD 8192,SSD 16384,SSD LL1024,SSD LL2048,SSD LL4096,1024 MB high-memory,1536 MB high-memory,2048 MB high-memory,4096 MB high-memory,8192 MB high-memory,16384 MB high-memory,32768 MB high-memory,SSD 1024 high-memory,SSD 1536 high-memory,SSD 2048 high-memory,SSD 4096 high-memory,SSD 8192 high-memory,SSD 16384 high-memory,SSD 32768 high-memory"),
 		"plan_id" => array("Type" => "text", "Size" => "5", "Description" => "Only required for special plans; if set, overrides plan name"),
 		"API id" => array("Type" => "text", "Size" => "20", "Description" => "Generate from API tab"),
 		"API key" => array("Type" => "text", "Size" => "30", "Description" => "Generate from API tab")
@@ -97,6 +97,64 @@ function lndynamic_CreateAccount($params) {
 			$plan_id = 5;
 		} else if($plan_name == '16384 MB') {
 			$plan_id = 6;
+		} else if($plan_name == 'Special 2048') {
+			$plan_id = 23;
+		} else if($plan_name == 'Special 1536') {
+			$plan_id = 31;
+		} else if($plan_name == 'Flexible 2048') {
+			$plan_id = 35;
+		} else if($plan_name == 'Flexible 4096') {
+			$plan_id = 36;
+		} else if($plan_name == 'Flexible 8192') {
+			$plan_id = 37;
+		} else if($plan_name == 'Flexible 4096+') {
+			$plan_id = 42;
+		} else if($plan_name == 'SSD 512') {
+			$plan_id = 43;
+		} else if($plan_name == 'SSD 1024') {
+			$plan_id = 44;
+		} else if($plan_name == 'SSD 2048') {
+			$plan_id = 45;
+		} else if($plan_name == 'SSD 4096') {
+			$plan_id = 46;
+		} else if($plan_name == 'SSD 8192') {
+			$plan_id = 47;
+		} else if($plan_name == 'SSD 16384') {
+			$plan_id = 48;
+		} else if($plan_name == 'SSD LL1024') {
+			$plan_id = 49;
+		} else if($plan_name == 'SSD LL2048') {
+			$plan_id = 50;
+		} else if($plan_name == 'SSD LL4096') {
+			$plan_id = 51;
+		} else if($plan_name == '1024 MB high-memory') {
+			$plan_id = 59;
+		} else if($plan_name == '1536 MB high-memory') {
+			$plan_id = 60;
+		} else if($plan_name == '2048 MB high-memory') {
+			$plan_id = 61;
+		} else if($plan_name == '4096 MB high-memory') {
+			$plan_id = 62;
+		} else if($plan_name == '8192 MB high-memory') {
+			$plan_id = 63;
+		} else if($plan_name == '16384 MB high-memory') {
+			$plan_id = 64;
+		} else if($plan_name == '32768 MB high-memory') {
+			$plan_id = 65;
+		} else if($plan_name == 'SSD 1024 high-memory') {
+			$plan_id = 66;
+		} else if($plan_name == 'SSD 1536 high-memory') {
+			$plan_id = 67;
+		} else if($plan_name == 'SSD 2048 high-memory') {
+			$plan_id = 68;
+		} else if($plan_name == 'SSD 4096 high-memory') {
+			$plan_id = 69;
+		} else if($plan_name == 'SSD 8192 high-memory') {
+			$plan_id = 70;
+		} else if($plan_name == 'SSD 16384 high-memory') {
+			$plan_id = 71;
+		} else if($plan_name == 'SSD 32768 high-memory') {
+			$plan_id = 72;
 		} else {
 			$plan_id = 1;
 		}
