@@ -91,7 +91,7 @@ function lndynamic_ConfigOptions() {
 		"plan_id" => array("Type" => "text", "Size" => "5", "Description" => "Only required for special plans; if set, overrides plan name"),
 		"API id" => array("Type" => "text", "Size" => "20", "Description" => "Generate from API tab"),
 		"API key" => array("Type" => "text", "Size" => "30", "Description" => "Generate from API tab"),
-		"Region" => array("Type" => "text", "Size" => "16", "Description" => "The region to provision in"),
+		"Region" => array("Type" => "text", "Size" => "16", "Description" => "The region to provision in (e.g. 'toronto', 'montreal', 'roubaix')"),
 	);
 }
 
@@ -103,7 +103,7 @@ function lndynamic_CreateAccount($params) {
 	$plan_id = $params['configoption2'];
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
-	$region = $params['configoption5'];
+	$region = strtolower($params['configoption5']);
 
 	if(!$region) {
 		$region = 'toronto';
