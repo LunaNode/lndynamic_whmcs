@@ -198,7 +198,7 @@ function lndynamic_ClientArea($params) {
 	$images = $images['images'];
 
 	ob_start();
-	include(dirname(__FILE__) . "/template.php");
+	include(dirname(__FILE__) . "/clientarea.tmpl.php");
 	return ob_get_clean();
 }
 
@@ -323,7 +323,9 @@ function lndynamic_vnc($params) {
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'vnc', array('vm_id' => $params['customfields']['vmid']));
 
 	if(array_key_exists('vnc_url', $result)) {
-		lunanode_redirect($result['vnc_url']);
+		$vnc_url = $result['vnc_url'];
+		include(dirname(__FILE__) . "/vnc.tmpl.php");
+		exit;
 	} else {
 		return "Error: VNC connection failed.";
 	}
