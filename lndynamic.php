@@ -213,10 +213,15 @@ function lndynamic_ClientArea($params) {
 
 	$vmid = $params['customfields']['vmid'];
 	$info = lndynamic_API($api_id, $api_key, 'vm', 'info', array('vm_id' => $vmid));
-	$images = lndynamic_API($api_id, $api_key, 'image', 'list', array('vm_id' => $vmid));
 
-	if(!array_key_exists('info', $info) || !array_key_exists('images', $images)) {
-		return "Backend call failed.";
+	if(!array_key_exists('info', $info)) {
+		return "Backend VM info call failed.";
+	}
+
+	$images = lndynamic_API($api_id, $api_key, 'image', 'list', array('region' => $info['extra']['region']));
+
+	if(!array_key_exists('images', $images)) {
+		return "Backend image list call failed.";
 	}
 
 	$extra = $info['extra'];
