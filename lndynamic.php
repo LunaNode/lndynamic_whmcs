@@ -187,15 +187,22 @@ function lndynamic_ClientArea($params) {
 		return "Backend VM info call failed.";
 	}
 
-	$images = lndynamic_API($api_id, $api_key, 'image', 'list', array('region' => $info['extra']['region']));
+	$apiImages = lndynamic_API($api_id, $api_key, 'image', 'list', array('region' => $info['extra']['region']));
 
-	if(!array_key_exists('images', $images)) {
+	if(!array_key_exists('images', $apiImages)) {
 		return "Backend image list call failed.";
+	}
+
+	// filter so we only return template images, since we don't support swapping boot order
+	$images = array();
+	foreach($apiImages['images'] as $apiImage) {
+		if(strpos($apiImage['name'], 'template') !== false) {
+			$images[] = $apiImage;
+		}
 	}
 
 	$extra = $info['extra'];
 	$info = $info['info'];
-	$images = $images['images'];
 
 	ob_start();
 	include(dirname(__FILE__) . "/clientarea.tmpl.php");
