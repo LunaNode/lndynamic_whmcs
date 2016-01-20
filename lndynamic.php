@@ -1,50 +1,19 @@
 <?php
 
-require_once("common.php");
+require_once(dirname(__FILE__) . "/common.php");
+require_once(dirname(__FILE__) . "/api.php");
 
 function lndynamic_API($api_id, $api_key, $category, $action, $params = array()) {
-	$url = "https://dynamic.lunanode.com/api.php";
-
-	$fields = array();
-	$fields['api_id'] = $api_id;
-	$fields['api_key'] = $api_key;
-	$fields['category'] = $category;
-	$fields['action'] = $action;
-
-	foreach($params as $key => $value) {
-		$fields[urlencode($key)] = urlencode($value);
-	}
-
-	$fields_string = "";
-	foreach($fields as $key=>$value) {
-		$fields_string .= $key . '=' . $value . '&';
-	}
-	rtrim($fields_string, '&');
-
-	//open connection
-	$ch = curl_init();
-
-	//set the url, number of POST vars, POST data
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-	if($fields) {
-		curl_setopt($ch, CURLOPT_POST, count($fields));
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
-	}
-
-	//execute post
-	$raw = curl_exec($ch);
-
-	//close connection
-	curl_close($ch);
-
-	$result = json_decode($raw, true);
-
-	if(!is_array($result)) {
-		return array('error' => $raw);
-	} else {
-		return $result;
+	try {
+		$lndynamic = new LNDynamic($api_id, $api_key);
+		return $lndynamic->request($category, $action, $params);
+	} catch(LNDAPIException $e) {
+		$error = $e->getMessage();
+		if(strpos($error, 'API error: ') !== false) {
+			$parts = explode('API error: ', $error);
+			$error = $parts[1];
+		}
+		return array('error' => $error);
 	}
 }
 
