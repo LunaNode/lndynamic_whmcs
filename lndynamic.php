@@ -90,7 +90,8 @@ function lndynamic_ConfigOptions() {
 		"Plan name" => array("Type" => "dropdown", "Options" => $planOptions),
 		"plan_id" => array("Type" => "text", "Size" => "5", "Description" => "Only required for special plans; if set, overrides plan name"),
 		"API id" => array("Type" => "text", "Size" => "20", "Description" => "Generate from API tab"),
-		"API key" => array("Type" => "text", "Size" => "30", "Description" => "Generate from API tab")
+		"API key" => array("Type" => "text", "Size" => "30", "Description" => "Generate from API tab"),
+		"Region" => array("Type" => "text", "Size" => "16", "Description" => "The region to provision in"),
 	);
 }
 
@@ -102,6 +103,11 @@ function lndynamic_CreateAccount($params) {
 	$plan_id = $params['configoption2'];
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
+	$region = $params['configoption5'];
+
+	if(!$region) {
+		$region = 'toronto';
+	}
 
 	if(!lunanode_customFieldExists($params['pid'], 'vmid')) {
 		return 'Custom field vmid has not been configured.';
@@ -134,7 +140,7 @@ function lndynamic_CreateAccount($params) {
 		$plan_id = intval($plan_id);
 	}
 
-	$result = lndynamic_API($api_id, $api_key, 'vm', 'create', array('hostname' => $domain, 'plan_id' => $plan_id, 'image_id' => $os, 'wait' => 1));
+	$result = lndynamic_API($api_id, $api_key, 'vm', 'create', array('hostname' => $domain, 'plan_id' => $plan_id, 'image_id' => $os, 'region' => $region));
 
 	if(array_key_exists('error', $result)) {
 		return "Error: {$result['error']}.";
@@ -302,8 +308,8 @@ function lndynamic_reimage($params) {
 	if(!$info['info']['ip']) {
 		lndynamic_API($api_id, $api_key, 'vm', 'floatingip-add', array('vm_id' => $params['customfields']['vmid'])); //maybe this failed to acquire IP, so try now
 		return "Error: VM does not have an IP address yet!";
-	} else if(!array_key_exists('hostname', $info['info']) || !array_key_exists('plan_id', $info['extra'])) {
-		return "Error: VM missing hostname and/or plan_id attribtues.";
+	} else if(!array_key_exists('hostname', $info['info']) || !array_key_exists('plan_id', $info['extra']) || !array_key_exists('region', $info['extra'])) {
+		return "Error: VM missing hostname and/or plan_id and/or region attribtues.";
 	}
 
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'floatingip-delete', array('vm_id' => $params['customfields']['vmid'], 'keep' => 'yes'));
@@ -318,7 +324,7 @@ function lndynamic_reimage($params) {
 		return "Error: {$result['error']}.";
 	}
 
-	$result = lndynamic_API($api_id, $api_key, 'vm', 'create', array('hostname' => $info['info']['hostname'], 'plan_id' => $info['extra']['plan_id'], 'image_id' => $_REQUEST['os'], 'ip' => $info['info']['ip']));
+	$result = lndynamic_API($api_id, $api_key, 'vm', 'create', array('hostname' => $info['info']['hostname'], 'plan_id' => $info['extra']['plan_id'], 'image_id' => $_REQUEST['os'], 'ip' => $info['info']['ip'], 'region' => $info['extra']['region']));
 
 	if(array_key_exists('error', $result)) {
 		return "Error: {$result['error']}.";
