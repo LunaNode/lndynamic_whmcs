@@ -52,6 +52,9 @@
 <button type="submit" class="searchinput" name="a" value="reboot">Reboot</button>
 <button type="submit" class="searchinput" name="a" value="stop">Stop</button>
 <button type="submit" class="searchinput" name="a" value="rescue">Rescue</button>
+<?php if(isset($info['diskswap'])) { ?>
+	<button type="submit" class="searchinput" name="a" value="diskswap">Swap boot order</button>
+<?php } ?>
 <a href="clientarea.php?action=productdetails&id=<?php echo $params['serviceid']; ?>&serveraction=custom&a=vnc" target="_blank"><button type="button" class="searchinput">VNC</button></a>
 </form>
 

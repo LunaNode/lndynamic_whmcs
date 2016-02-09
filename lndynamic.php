@@ -338,14 +338,21 @@ function lndynamic_vnc($params) {
 	}
 }
 
+function lndynamic_diskswap($params) {
+	$result = lndynamic_action($params, 'diskswap');
+	lndynamic_action($params, 'reboot');
+	return $result;
+}
+
 function lndynamic_ClientAreaCustomButtonArray() {
 	$buttonarray = array(
-	 "Reboot Server" => "reboot",
-	 "Start Server" => "start",
-	 "Shutdown Server" => "stop",
-	 "Re-image" => "reimage",
-	 "Rescue" => "rescue",
-	 "VNC" => "vnc"
+		"Reboot Server" => "reboot",
+		"Start Server" => "start",
+		"Shutdown Server" => "stop",
+		"Re-image" => "reimage",
+		"Rescue" => "rescue",
+		"VNC" => "vnc",
+		"Swap boot order" => "diskswap",
 	);
 	return $buttonarray;
 }
