@@ -61,6 +61,8 @@ function lndynamic_ConfigOptions() {
 		"API id" => array("Type" => "text", "Size" => "20", "Description" => "Generate from API tab"),
 		"API key" => array("Type" => "text", "Size" => "30", "Description" => "Generate from API tab"),
 		"Region" => array("Type" => "text", "Size" => "16", "Description" => "The region to provision in (e.g. 'toronto', 'montreal', 'roubaix')"),
+		"Startup scripts" => array("Type" => "text", "Size" => "16", "Description" => "Comma-separated list of startup script IDs to run on VMs (optional)"),
+		"Security groups" => array("Type" => "text", "Size" => "16", "Description" => "Comma-separated list of security group IDs to associate with VMs (optional)"),
 	);
 }
 
@@ -73,6 +75,8 @@ function lndynamic_CreateAccount($params) {
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
 	$region = strtolower($params['configoption5']);
+	$startupScripts = $params['configoption6'];
+	$securityGroups = $params['configoption7'];
 
 	if(!$region) {
 		$region = 'toronto';
@@ -109,7 +113,21 @@ function lndynamic_CreateAccount($params) {
 		$plan_id = intval($plan_id);
 	}
 
-	$result = lndynamic_API($api_id, $api_key, 'vm', 'create', array('hostname' => $domain, 'plan_id' => $plan_id, 'image_id' => $os, 'region' => $region));
+	$args = array(
+		'hostname' => $domain,
+		'plan_id' => $plan_id,
+		'image_id' => $os,
+		'region' => $region
+	);
+
+	if($startupScripts) {
+		$args['scripts'] = $startupScripts;
+	}
+	if($securityGroups) {
+		$args['securitygroups'] = $securityGroups;
+	}
+
+	$result = lndynamic_API($api_id, $api_key, 'vm', 'create', $args);
 
 	if(array_key_exists('error', $result)) {
 		return "Error: {$result['error']}.";
