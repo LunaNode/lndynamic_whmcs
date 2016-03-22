@@ -93,10 +93,37 @@ function lndynamic_CreateAccount($params) {
 		}
 	}
 
+	// get image ID
+	// if OS config option is integer, then that is the image ID
+	// otherwise, it is image name, which we have to change to an ID
 	if(!array_key_exists('Operating System', $configoptions)) {
 		return "Error: you must select an operating system!";
 	}
 	$os = $configoptions['Operating System'];
+	$image_id = false;
+
+	if(is_numeric($os)) {
+		$image_id = intval($os);
+	} else {
+		$apiImages = lndynamic_API($api_id, $api_key, 'image', 'list', array('region' => $region));
+
+		if(!array_key_exists('images', $apiImages)) {
+			return "Error: backend image list call failed.";
+		}
+
+		// filter so we only return template images, since we don't support swapping boot order
+		$images = array();
+		foreach($apiImages['images'] as $apiImage) {
+			if(stripos($apiImage['name'], $os) !== false) {
+				$image_id = intval($apiImage['image_id']);
+				break;
+			}
+		}
+
+		if($image_id === false) {
+			return "Error: could not find template matching the selected operating system!";
+		}
+	}
 
 	if(!$api_id || !$api_key) {
 		return "Error: product misconfiguration (backend interface not set).";
@@ -116,7 +143,7 @@ function lndynamic_CreateAccount($params) {
 	$args = array(
 		'hostname' => $domain,
 		'plan_id' => $plan_id,
-		'image_id' => $os,
+		'image_id' => $image_id,
 		'region' => $region
 	);
 
