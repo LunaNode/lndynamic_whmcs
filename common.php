@@ -1,6 +1,6 @@
 <?php
 
-function mysql_query_safe($query, array $params = array()) {
+function lunanode_mysql_query_safe($query, array $params = array()) {
 	if (!empty($params)) {
 		// there is possibility to use % sign in query - this line escapes it!
 		$query = str_replace('%', '%%', $query);
@@ -34,22 +34,22 @@ function mysql_query_safe($query, array $params = array()) {
 }
 
 function lunanode_customFieldExists($relid, $fieldname) {
-	$result = mysql_query_safe("SELECT COUNT(*) FROM tblcustomfields WHERE `relid` = ? AND `type` = 'product' AND `fieldname` LIKE ?", array($relid, (strpos($fieldname, '|') ? $fieldname . '|%' : $fieldname . '%')));
+	$result = lunanode_mysql_query_safe("SELECT COUNT(*) FROM tblcustomfields WHERE `relid` = ? AND `type` = 'product' AND `fieldname` LIKE ?", array($relid, (strpos($fieldname, '|') ? $fieldname . '|%' : $fieldname . '%')));
 	$row = mysql_fetch_array($result);
 	return $row[0] > 0;
 }
 
 function lunanode_customFieldSet($relid, $fieldname, $serviceid, $value) {
 	if(lunanode_customFieldExists($relid, $fieldname)) {
-		$result = mysql_query_safe("SELECT `id` FROM tblcustomfields WHERE `relid` = ? AND `type` = 'product' AND `fieldname` LIKE ?", array($relid, (strpos($fieldname, '|') ? $fieldname . '|%' : $fieldname . '%')));
+		$result = lunanode_mysql_query_safe("SELECT `id` FROM tblcustomfields WHERE `relid` = ? AND `type` = 'product' AND `fieldname` LIKE ?", array($relid, (strpos($fieldname, '|') ? $fieldname . '|%' : $fieldname . '%')));
 		$row = mysql_fetch_array($result);
-		mysql_query_safe('DELETE FROM tblcustomfieldsvalues WHERE `fieldid` = ? AND `relid` = ?', array($row[0], $serviceid));
-		mysql_query_safe('INSERT INTO tblcustomfieldsvalues (fieldid, relid, value) VALUES (?, ?, ?)', array($row[0], $serviceid, $value));
+		lunanode_mysql_query_safe('DELETE FROM tblcustomfieldsvalues WHERE `fieldid` = ? AND `relid` = ?', array($row[0], $serviceid));
+		lunanode_mysql_query_safe('INSERT INTO tblcustomfieldsvalues (fieldid, relid, value) VALUES (?, ?, ?)', array($row[0], $serviceid, $value));
 	}
 }
 
 function lunanode_isActive($serviceid) {
-	$result = mysql_query_safe("SELECT `domainstatus` from tblhosting WHERE `id` = ?", array($serviceid));
+	$result = lunanode_mysql_query_safe("SELECT `domainstatus` from tblhosting WHERE `id` = ?", array($serviceid));
 
 	if($row = mysql_fetch_array($result)) {
 		return $row[0] == 'Active';
