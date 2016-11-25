@@ -69,4 +69,13 @@
 </select>
 <button class="searchinput" name="a" value="reimage">Reinstall</button>
 </form>
+
+<h4>Graphs</h4>
+
+<p>
+<a href="clientarea.php?action=productdetails&id=<?php echo $params['serviceid']; ?>&serveraction=custom&a=graph&key=bandwidth" target="_blank"><button type="button" class="searchinput">Bandwidth</button></a>
+<a href="clientarea.php?action=productdetails&id=<?php echo $params['serviceid']; ?>&serveraction=custom&a=graph&key=cpu" target="_blank"><button type="button" class="searchinput">CPU</button></a>
+<a href="clientarea.php?action=productdetails&id=<?php echo $params['serviceid']; ?>&serveraction=custom&a=graph&key=io" target="_blank"><button type="button" class="searchinput">I/O</button></a>
+</p>
+
 </div>

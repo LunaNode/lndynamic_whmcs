@@ -389,6 +389,30 @@ function lndynamic_diskswap($params) {
 	return $result;
 }
 
+function lndynamic_graph($params) {
+	if(array_key_exists('key', $_REQUEST)) {
+		$graph_key = $_REQUEST['key'];
+	} else {
+		$graph_key = 'bandwidth';
+	}
+	if($graph_key !== 'bandwidth' && $graph_key !== 'cpu' && $graph_key !== 'io') {
+		return 'Invalid graph key.';
+	}
+
+	$api_id = $params['configoption3'];
+	$api_key = $params['configoption4'];
+
+	if(!$params['customfields']['vmid']) {
+		return 'Virtual machine does not exist.';
+	}
+
+	$result = lndynamic_API($api_id, $api_key, 'vm', 'usage', array('vm_id' => $params['customfields']['vmid'], 'key' => $graph_key));
+	$b64usage = base64_encode(json_encode($result['usage']));
+	$lndynamic_path = $WEB_ROOT . '/modules/servers/lndynamic';
+	include(dirname(__FILE__) . "/graph.tmpl.php");
+	exit;
+}
+
 function lndynamic_ClientAreaCustomButtonArray() {
 	$buttonarray = array(
 		"Reboot Server" => "reboot",
@@ -398,6 +422,7 @@ function lndynamic_ClientAreaCustomButtonArray() {
 		"Rescue" => "rescue",
 		"VNC" => "vnc",
 		"Swap boot order" => "diskswap",
+		"Graph" => "graph",
 	);
 	return $buttonarray;
 }
