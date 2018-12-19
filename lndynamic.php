@@ -41,12 +41,28 @@ function lndynamic_Plans() {
 	);
 }
 
+function lndynamic_ParamsToPlanID($params) {
+	$plan_name = $params['configoption1'];
+	$plan_id = $params['configoption2'];
+
+	if(!$plan_id) {
+		$plans = lndynamic_Plans();
+		if(array_key_exists($plan_name, $plans)) {
+			return $plans[$plan_name];
+		} else {
+			throw new Exception("Error: product misconfiguration (unknown plan name '$plan_name', and plan_id not set).");
+		}
+	} else {
+		return $plan_id;
+	}
+}
+
 function lndynamic_ConfigOptions() {
 	$planOptions = implode(',', array_keys(lndynamic_Plans()));
 
 	return array(
 		"Plan name" => array("Type" => "dropdown", "Options" => $planOptions),
-		"plan_id" => array("Type" => "text", "Size" => "5", "Description" => "Only required for special plans; if set, overrides plan name"),
+		"plan_id" => array("Type" => "text", "Size" => "32", "Description" => "Only required for special plans; if set, overrides plan name"),
 		"API id" => array("Type" => "text", "Size" => "20", "Description" => "Generate from API tab"),
 		"API key" => array("Type" => "text", "Size" => "30", "Description" => "Generate from API tab"),
 		"Region" => array("Type" => "text", "Size" => "16", "Description" => "The region to provision in (e.g. 'toronto', 'montreal', 'roubaix')"),
@@ -59,8 +75,6 @@ function lndynamic_CreateAccount($params) {
 	$domain = $params["domain"];
 	$configoptions = $params["configoptions"];
 
-	$plan_name = $params['configoption1'];
-	$plan_id = $params['configoption2'];
 	$api_id = $params['configoption3'];
 	$api_key = $params['configoption4'];
 	$region = strtolower($params['configoption5']);
@@ -118,17 +132,11 @@ function lndynamic_CreateAccount($params) {
 		return "Error: product misconfiguration (backend interface not set).";
 	}
 
-	if(!$plan_id) {
-		$plans = lndynamic_Plans();
-		if(array_key_exists($plan_name, $plans)) {
-			$plan_id = $plans[$plan_name];
-		} else {
-			return "Error: product misconfiguration (unknown plan name '$plan_name', and plan_id not set).";
-		}
-	} else {
-		$plan_id = intval($plan_id);
+	try {
+		$plan_id = lndynamic_ParamsToPlanID($params);
+	} catch(Exception $e) {
+		return $e->getMessage();
 	}
-
 	$args = array(
 		'hostname' => $domain,
 		'plan_id' => $plan_id,
