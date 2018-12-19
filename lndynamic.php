@@ -211,7 +211,27 @@ function lndynamic_UnsuspendAccount($params) {
 }
 
 function lndynamic_ChangePackage($params) {
-	return "Error: operation not supported.";
+	$api_id = $params['configoption3'];
+	$api_key = $params['configoption4'];
+
+	if(!$params['customfields']['vmid']) {
+		return 'Virtual machine does not exist.';
+	}
+
+	try {
+		$plan_id = lndynamic_ParamsToPlanID($params);
+	} catch(Exception $e) {
+		return $e->getMessage();
+	}
+
+	$result = lndynamic_API($api_id, $api_key, 'vm', 'resize', array(
+		'vm_id' => $params['customfields']['vmid'],
+		'plan_id' => $plan_id,
+	));
+	if(array_key_exists('error', $result)) {
+		return "Error: {$result['error']}.";
+	}
+	return "success";
 }
 
 function lndynamic_ClientArea($params) {
