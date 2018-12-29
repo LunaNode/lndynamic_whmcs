@@ -78,4 +78,25 @@
 <a href="clientarea.php?action=productdetails&id=<?php echo $params['serviceid']; ?>&serveraction=custom&a=graph&key=io" target="_blank"><button type="button" class="searchinput">I/O</button></a>
 </p>
 
+<h4>rDNS</h4>
+
+<?php
+foreach($info['addresses'] as $address) {
+	if(!$address['external'] || $address['version'] != 4) {
+		continue;
+	}
+	if(!array_key_exists('reverse', $address)) {
+		$address['reverse'] = '';
+	}
+	?>
+	<form method="POST" action="clientarea.php?action=productdetails&id=<?php echo $params['serviceid']; ?>">
+	<input type="hidden" name="serveraction" value="custom" />
+	<input type="hidden" name="a" value="rdns" />
+	<input type="hidden" name="ip" value="<?php echo $address['addr']; ?>" />
+	<?php echo $address['addr']; ?>
+	<input type="text" name="reverse" value="<?php echo $address['reverse']; ?>" />
+	<button type="submit" class="searchinput">Update</button>
+	</form>
+<?php } ?>
+
 </div>

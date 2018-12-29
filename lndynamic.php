@@ -406,6 +406,45 @@ function lndynamic_diskswap($params) {
 	return $result;
 }
 
+function lndynamic_rdns($params) {
+	if(!array_key_exists('ip', $_REQUEST) || !$_REQUEST['ip']) {
+		return 'No IP specified.';
+	} else if(!array_key_exists('reverse', $_REQUEST) || !$_REQUEST['reverse']) {
+		return 'No reverse hostname specified.';
+	}
+
+	$request_ip = $_REQUEST['ip'];
+	$request_reverse = $_REQUEST['reverse'];
+
+	$api_id = $params['configoption3'];
+	$api_key = $params['configoption4'];
+
+	// make sure this is a valid IP
+	$info = lndynamic_API($api_id, $api_key, 'vm', 'info', array('vm_id' => $params['customfields']['vmid']));
+	if(array_key_exists('error', $result)) {
+		return "Error: {$info['error']}.";
+	}
+	$valid = false;
+	foreach($info['info']['addresses'] as $address) {
+		if($address['external'] && $address['addr'] === $request_ip) {
+			$valid = true;
+		}
+	}
+	if(!$valid) {
+		return 'Invalid IP specified';
+	}
+
+	$result = lndynamic_API($api_id, $api_key, 'dns', 'set', array(
+		'ip' => $request_ip,
+		'hostname' => $request_reverse,
+	));
+	if(array_key_exists('error', $result)) {
+		return "Error: {$result['error']}.";
+	}
+
+	return 'success';
+}
+
 function lndynamic_graph($params) {
 	if(array_key_exists('key', $_REQUEST)) {
 		$graph_key = $_REQUEST['key'];
@@ -440,6 +479,7 @@ function lndynamic_ClientAreaCustomButtonArray() {
 		"VNC" => "vnc",
 		"Swap boot order" => "diskswap",
 		"Graph" => "graph",
+		"rDNS" => "rdns",
 	);
 	return $buttonarray;
 }
