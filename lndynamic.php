@@ -464,7 +464,7 @@ function lndynamic_graph($params) {
 
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'usage', array('vm_id' => $params['customfields']['vmid'], 'key' => $graph_key));
 	$b64usage = base64_encode(json_encode($result['usage']));
-	$lndynamic_path = $WEB_ROOT . '/modules/servers/lndynamic';
+	$lndynamic_path = 'modules/servers/lndynamic';
 	include(dirname(__FILE__) . "/graph.tmpl.php");
 	exit;
 }
