@@ -137,11 +137,35 @@ function lndynamic_CreateAccount($params) {
 	} catch(Exception $e) {
 		return $e->getMessage();
 	}
+
+	// get external IP
+	$result = lndynamic_API($api_id, $api_key, 'floating', 'add', array(
+		'region' => $region,
+	));
+	if(array_key_exists('error', $result)) {
+		return "Error: {$result['error']}.";
+	}
+	$externalIP = $result['ip'];
+
+	// set rDNS
+	$result = lndynamic_API($api_id, $api_key, 'dns', 'set', array(
+		'ip' => $externalIP,
+		'hostname' => $domain,
+	));
+	if(array_key_exists('error', $result)) {
+		lndynamic_API($api_id, $api_key, 'dns', 'set', array(
+			'ip' => $externalIP,
+			'hostname' => '.',
+		));
+	}
+
+	// create VM
 	$args = array(
 		'hostname' => $domain,
 		'plan_id' => $plan_id,
 		'image_id' => $image_id,
-		'region' => $region
+		'region' => $region,
+		'ip' => $externalIP,
 	);
 
 	if($startupScripts) {
@@ -154,6 +178,10 @@ function lndynamic_CreateAccount($params) {
 	$result = lndynamic_API($api_id, $api_key, 'vm', 'create', $args);
 
 	if(array_key_exists('error', $result)) {
+		lndynamic_API($api_id, $api_key, 'floating', 'delete', array(
+			'region' => $region,
+			'ip' => $externalIP,
+		));
 		return "Error: {$result['error']}.";
 	} else {
 		lunanode_customFieldSet($params['pid'], 'vmid', $params['serviceid'], $result['vm_id']);
